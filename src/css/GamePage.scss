@@ -1,10 +1,14 @@
 @import "App.scss";
 
-.start-tip {
+.start-tip, .end-tip {
     color: $light-gray;
     font-size: 20px;
     font-family: $big-font;
     margin-top: $spacing-unit;
+}
+
+.end-tip {
+    margin-bottom: $spacing-unit;
 }
 
 .timer-text {
@@ -36,4 +40,26 @@
 
 .idk {
     font-size: 18px !important;
+}
+
+.song-result-head {
+    // font-weight: bold;
+    color: $light-gray;
+}
+.song-result {
+    font-size: 40px;
+    line-height: 1em;
+    font-weight: bold;
+    color: $white;
+}
+
+.overall-score {
+    font-size: 60px;
+}
+
+.individual-stats {
+    display: flex;
+    flex-direction: row wrap;
+    gap: $spacing-unit * 2;
+    justify-content: center;
 }

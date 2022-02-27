@@ -24,6 +24,10 @@ export function getStrippedTitles(title) {
     return [withp, wop];
 }
 
+export function getBlanksFor(str) {
+    return '_'.repeat(str.length)
+}
+
 export function getStrippedArtists(artists) {
     return artists.map(x => stripString(x))
 }

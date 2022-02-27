@@ -2,10 +2,10 @@
 
 .name-the-song {
     color: $light-gray;
+}
 
-    strong {
-        color: $white;
-    }
+.round-number {
+    font-weight: bold;
 }
 
 .guess-input {
@@ -14,5 +14,8 @@
     background: $dark-gray;
     border-bottom: 2px solid $white !important;
     color: $white;
-    font-size: 24px;
+    font-size: 26px;
+    text-align: center;
+    margin-bottom: $spacing-unit;
+    margin-top: 5px;
 }

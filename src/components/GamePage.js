@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import SpotifyWebApi from 'spotify-web-api-js'
 import { CountdownCircleTimer } from 'react-countdown-circle-timer'
 import Playlists from '../js/playlists'
+import Messages from '../js/messages'
 import CorrectAnswers from './CorrectAnswers.js'
 import InputBox from './InputBox.js'
 import Header from './Header.js'
@@ -126,6 +127,21 @@ export default function GamePage(props) {
             clearTimeout(timerId);
         }
     }
+
+    function getMessage(score) {
+        if (score <= 5) {
+            return Messages.bad
+        }
+        else if (5 < score <= 10) {
+            return Messages.ok
+        }
+        else if (10 < score <= 15) {
+            return Messages.good
+        }
+        else {
+            return Messages.verygood
+        }
+    }
     
     // useEffect(() => {
     //     // Initialize the Spotify API instance
@@ -138,7 +154,7 @@ export default function GamePage(props) {
 
     // check if guessInput is the same as the song title or one of the artist names
     useEffect(() => {
-        if (!getCurrentSong()) {
+        if (!getCurrentSong() || roundOver) {
             return
         }
 
@@ -190,12 +206,23 @@ export default function GamePage(props) {
                 </div>
             }
 
-            {gameEnded && 
+            {gameEnded &&
                 <div>
-                    <div className='song-result-head'>Final Score: 
-                        <span className='song-result'>{artistScore + songScore}</span>
+                    <div className='game-end-stats'>
+                        <div className='song-result-head'>Final Score</div> 
+                        <div className='song-result overall-score'>{artistScore + songScore}</div>
                     </div>
-                    <div className='song-result-head'>Breakdown: {songScore} songs correct, {artistScore} artists correct!</div>
+                    <div className='individual-stats'>
+                        <div className="song-stats">
+                            <div className='song-result-head'>Songs</div> 
+                            <div className='song-result'>{songScore}/{SONGS_PER_GAME}</div>
+                        </div>
+                        <div className="artist-stats">
+                            <div className='song-result-head'>Artists</div> 
+                            <div className='song-result'>{artistScore}/{SONGS_PER_GAME}</div>
+                        </div>
+                    </div>
+                    <div className="end-tip">{getMessage(artistScore+songScore)}</div>
                     <button className="play-again-button nice-button" onClick={resetGame}>Play Again</button>
                 </div>
             }
