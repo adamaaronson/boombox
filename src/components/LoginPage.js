@@ -10,7 +10,7 @@ export default function LoginPage(props) {
         <div className="login-page">
             <Header/>
             <SpotifyAuth
-                redirectUri={`${props.homeURL}/callback`}
+                redirectUri={`${props.homeURL}/`}
                 clientID='29c1316b4c844ab3b3abb8a9fff67957'
                 scopes={[Scopes.userLibraryRead, Scopes.userReadPrivate, Scopes.playlistReadPrivate]} // either style will work
                 onAccessToken={(token) => props.setToken(token)}

@@ -6,7 +6,8 @@ import Header from './Header';
 import '../css/App.scss'
 import Cookies from 'js-cookie'
 import Footer from './Footer'
-const HOME_URL = 'http://localhost:3000'
+
+const HOME_URL = 'https://aaronson.org/boombox'
 
 export default function App() {
     const [token, setToken] = React.useState(Cookies.get("spotifyAuthToken"))
