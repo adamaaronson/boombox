@@ -129,13 +129,13 @@ export default function GamePage(props) {
     }
 
     function getMessage(score) {
-        if (score <= 5) {
+        if (score <= SONGS_PER_GAME / 2) {
             return Messages.bad
         }
-        else if (5 < score <= 10) {
+        else if (SONGS_PER_GAME / 2 < score && score <= SONGS_PER_GAME) {
             return Messages.ok
         }
-        else if (10 < score <= 15) {
+        else if (SONGS_PER_GAME < score && score <= SONGS_PER_GAME * 3 / 2) {
             return Messages.good
         }
         else {
