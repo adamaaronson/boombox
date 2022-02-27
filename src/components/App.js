@@ -1,30 +1,31 @@
 import React from 'react'
-import { SpotifyApiContext } from 'react-spotify-api'
+// import {BrowserRouter as Router, Route } from 'react-router-dom'
+import LoginPage from './LoginPage';
+import GamePage from './GamePage';
+
 import Cookies from 'js-cookie'
 
-import { SpotifyAuth, Scopes } from 'react-spotify-auth'
-import 'react-spotify-auth/dist/index.css'
-
+const HOME_URL = 'http://localhost:3000'
 
 export default function App() {
-  const [token, setToken] = React.useState(Cookies.get("spotifyAuthToken"))
+    const [token, setToken] = React.useState(Cookies.get("spotifyAuthToken"))
 
-  return (
-    <div className='app'>
-      {token ? (
-        <SpotifyApiContext.Provider value={token}>
-          {/* Your Spotify Code here */}
-          <p>You are authorized with token: {token}</p>
-        </SpotifyApiContext.Provider>
-      ) : (
-        // Display the login page
-        <SpotifyAuth
-          redirectUri='http://localhost:3000/callback'
-          clientID='29c1316b4c844ab3b3abb8a9fff67957'
-          scopes={[Scopes.userReadPrivate, Scopes.userLibraryRead]} // either style will work
-          onAccessToken={(token) => setToken(token)}
-        />
-      )}
-    </div>
-  )
+    return (
+        <div className='app'>
+            <h1>🎶 boomBOX. 🎶</h1>
+            <h2>ye olde musical guessing game</h2>
+            {token ? (
+                // Successfully logged in, this will be the app
+                <GamePage
+                    token={token}
+                />
+            ) : (
+                // Display the login page
+                <LoginPage
+                    homeURL={HOME_URL}
+                    setToken={setToken}
+                />
+            )}
+        </div>
+    )
 }
