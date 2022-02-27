@@ -1,24 +1,33 @@
 import React, { useEffect, useState } from 'react'
 import SpotifyWebApi from 'spotify-web-api-js'
 import Playlists from '../js/playlists'
+import CorrectAnswers from './CorrectAnswers.js'
+import InputBox from './InputBox.js'
 import {getStrippedArtists, getStrippedTitles, shuffle, stripString, listToString} from '../js/utils';
-// import Timer from '../components/Timer.js'
 
-const SONGS_PER_ROUND = 10;
-var id = 0;
+const SONGS_PER_GAME = 5;
+const SECONDS_PER_ROUND = 30;
+var timerId = 0;
 
 export default function GamePage(props) {
+    // game state
     const [gameStarted, setGameStarted] = useState(false);
-    const [songs, setSongs] = useState(null);
+    const [gameEnded, setGameEnded] = useState(false);
+    const [gameIndex, setGameIndex] = useState(0);
     const [round, setRound] = useState(-1);
+    const [seconds, setSeconds] = useState(SECONDS_PER_ROUND);
+    const [roundOver, setRoundOver] = useState(false);
+
+    // music state
+    const [songs, setSongs] = useState(null);
     const [audio, setAudio] = useState(new Audio(''));
-    const [playing, setPlaying] = useState(false);
+    
+    // answers state
     const [guessInput, setGuessInput] = useState('');
     const [songCorrect, setSongCorrect] = useState(false);
+    const [songScore, setSongScore] = useState(0)
     const [artistCorrect, setArtistCorrect] = useState(false);
-
-    const [seconds, setSeconds] = useState(30);
-    const [isActive, setIsActive] = useState(true)
+    const [artistScore, setArtistScore] = useState(0)
     
     const getRandomSongsFromPlaylist = (spotifyApi, playlistId, numSongs) => {
         spotifyApi.getPlaylistTracks(playlistId)
@@ -30,10 +39,13 @@ export default function GamePage(props) {
                         title: song.name,
                         previewUrl: song.preview_url,
                         artists: song.artists.map(artist => artist.name),
+                        popularity: song.popularity,
                         strippedTitles: getStrippedTitles(song.name),
                         strippedArtists: getStrippedArtists(song.artists.map(artist => artist.name))
                     })
                 )
+                // sort songs in order of descending popularity
+                songs = songs.sort((a, b) => (b.popularity - a.popularity))
                 setSongs(songs)
             }, function(err) {
                 console.error(err);
@@ -42,49 +54,59 @@ export default function GamePage(props) {
 
     const getCurrentSong = () => {
         return songs ? songs[round] : null
-    }
+    };
+
+    const resetGame = () => {
+        setGameIndex(gameIndex + 1);
+        setGameEnded(false);
+        setGameStarted(false);
+        setRound(-1);
+        setSeconds(SECONDS_PER_ROUND);
+        setRoundOver(false);
+    };
 
     const startGame = () => {
         startNextRound()
-
         setGameStarted(true)
     }
 
     const startNextRound = () => {
-        audio.pause()
+        if (round + 1 === SONGS_PER_GAME) {
+            setGameEnded(true)
+            return
+        }
+        let nextSong = songs[round + 1]
+        let nextAudio = new Audio(nextSong.previewUrl)
 
-        stopPlayingSong()
-
+        setAudio(nextAudio)
         setRound(round + 1)
-
-        setAudio(new Audio())
-
         setSongCorrect(false)
         setArtistCorrect(false)
-
+        setGuessInput('')
+        setRoundOver(false)
         resetTimer()
+        
+        nextAudio.play()
     }
 
-    const startPlayingSong = () => {
-        setPlaying(true)
-    }
-
-    const stopPlayingSong = () => {
-        setPlaying(false)
+    const endCurrentRound = () => {
+        audio.pause();
+        
+        stopTimer()
+        setRoundOver(true)
     }
 
     function resetTimer() {
-        if (id) {
+        if (timerId) {
             setSeconds(0);
-            clearTimeout(id);
-            setSeconds(30);
+            clearTimeout(timerId);
+            setSeconds(SECONDS_PER_ROUND);
         } 
     }
 
     function stopTimer() {
-        if (id) {
-            setSeconds(0);
-            clearTimeout(id);
+        if (timerId) {
+            clearTimeout(timerId);
         }
     }
     
@@ -94,23 +116,8 @@ export default function GamePage(props) {
         spotifyApi.setAccessToken(props.token)
 
         // Choose random songs from a given playlist to use for the game
-        getRandomSongsFromPlaylist(spotifyApi, Playlists.allOut2010s, SONGS_PER_ROUND)
-
-        audio.addEventListener('ended', () => setPlaying(false));
-        return () => {
-            audio.removeEventListener('ended', () => setPlaying(false));
-        };
-    }, [])
-
-    // Updates the song for each new round
-    useEffect(() => {
-        songs && setAudio(new Audio(getCurrentSong().previewUrl));
-    }, [round])
-
-    // Toggles audio playing
-    useEffect(() => {
-        playing ? audio.play() : audio.pause();
-    }, [playing]);
+        getRandomSongsFromPlaylist(spotifyApi, Playlists.allOut2010s, SONGS_PER_GAME)
+    }, [gameIndex])
 
     // check if guessInput is the same as the song title or one of the artist names
     useEffect(() => {
@@ -120,59 +127,80 @@ export default function GamePage(props) {
 
         if (getCurrentSong().strippedTitles.includes(stripString(guessInput))) {
             setSongCorrect(true)
+            setGuessInput('')
+            setSongScore(songScore + 1);
         }
         
         if (getCurrentSong().strippedArtists.includes(stripString(guessInput))) {
             setArtistCorrect(true)
+            setGuessInput('')
+            setArtistScore(artistScore + 1);
         }
     }, [guessInput])
 
+    // check if song and artist are both correct
+    useEffect(() => {
+        if (songCorrect && artistCorrect) {
+            endCurrentRound();
+        }
+    }, [songCorrect, artistCorrect])
+
     // updates timer
     useEffect(() => {
-        if (seconds > 0) {
-            id = setTimeout(() => setSeconds(seconds - 1), 1000);
+        if (gameStarted && seconds > 0 && !roundOver) {
+            timerId = setTimeout(() => setSeconds(seconds - 1), 1000);
+        } else {
+            endCurrentRound();
         }
-    }, [seconds]);
+    }, [seconds, gameStarted]);
     
     return (
         <div>
             {!gameStarted &&
-                <button onClick={startGame}>Start game</button>
+                <div>
+                    <div>Make sure your sound is on!</div>
+                    <button onClick={startGame}>Start game</button>
+                </div>
             }
-            {gameStarted &&
+
+            {gameEnded && 
+                <div>
+                    <h2>Final Score: {artistScore + songScore}</h2>
+                    <div>Breakdown: {songScore} songs correct, {artistScore} artists correct!</div>
+                    <button onClick={resetGame}>Play Again!</button>
+                </div>
+            }
+
+            {gameStarted && !gameEnded &&
                 <div>
                     <h2>Round: {round + 1}</h2>
-                    <button onClick={startNextRound}>Next round</button>
+                    { roundOver ?
+                        <button onClick={startNextRound}>{round + 1 === SONGS_PER_GAME ? "See results" : "Next round"}</button>
+                        : <button onClick={endCurrentRound}>I HAVE NO IDEA</button>
+                    }
+                    <div>
+                        <div>Score: {songScore} songs correct, {artistScore} artists correct</div>
+                    </div>
                     <div>
                         <div>{seconds}s</div>
-                        {/* <button onClick={resetTimer}>Reset</button> */}
                     </div>
-                    {songs && 
+                    {songs &&
                         <div>
-                            <p>Song: {getCurrentSong().title}</p>
-                            <p>Artist(s): {getCurrentSong().artists && listToString(getCurrentSong().artists)}</p>
+                            {/* <p>SUPER SECRET Song: {getCurrentSong().title}</p>
+                            <p>SUPER SECRET Artist(s): {getCurrentSong().artists && listToString(getCurrentSong().artists)}</p> */}
 
-                            <button onClick={startPlayingSong}>Play</button>
-                            <button onClick={stopPlayingSong}>Pause</button>
+                            <InputBox
+                                guessInputValue={guessInput}
+                                onChangeGuessInput={setGuessInput}
+                            />
 
-                            <div className="input-boxes">
-                                <input
-                                    type="text"
-                                    id="guess-input"
-                                    className="guess-input"
-                                    value={guessInput}
-                                    onChange={e => setGuessInput(e.target.value)}
-                                />
-                                <div>
-                                    <label htmlFor="song-input">Can you name the song and artist?</label>
-                                </div>
-                            </div>
-
-                            <div className="revealer-boxes">
-                                {songCorrect && <p>Correct! Song: {getCurrentSong().title}</p>}
-                                {artistCorrect && <p>Correct! Artist(s): {getCurrentSong().artists && listToString(getCurrentSong().artists)}</p>}
-                            </div>
-                            
+                            <CorrectAnswers 
+                                songTitle={getCurrentSong().title}
+                                artistNames={listToString(getCurrentSong().artists)}
+                                songCorrect={songCorrect}
+                                artistCorrect={artistCorrect}
+                                roundOver={roundOver}
+                            />
                         </div>
                     }
                 </div>
