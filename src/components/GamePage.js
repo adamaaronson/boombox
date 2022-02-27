@@ -1,9 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import SpotifyWebApi from 'spotify-web-api-js'
+import { CountdownCircleTimer } from 'react-countdown-circle-timer'
 import Playlists from '../js/playlists'
 import CorrectAnswers from './CorrectAnswers.js'
 import InputBox from './InputBox.js'
+import Header from './Header.js'
 import {getStrippedArtists, getStrippedTitles, shuffle, stripString, listToString} from '../js/utils';
+import '../css/GamePage.scss'
+import '../css/GenreButtons.scss'
+import Footer from './Footer'
 
 const SONGS_PER_GAME = 5;
 const SECONDS_PER_ROUND = 30;
@@ -52,6 +57,12 @@ export default function GamePage(props) {
             });
     };
 
+    const setPlaylist = (playlist) => {
+        let spotifyApi = new SpotifyWebApi()
+        spotifyApi.setAccessToken(props.token)
+        getRandomSongsFromPlaylist(spotifyApi, playlist, SONGS_PER_GAME)
+    }
+
     const getCurrentSong = () => {
         return songs ? songs[round] : null
     };
@@ -64,6 +75,12 @@ export default function GamePage(props) {
         setSeconds(SECONDS_PER_ROUND);
         setRoundOver(false);
     };
+
+    useEffect(() => {
+        if (songs) {
+            startGame()
+        }
+    }, [songs])
 
     const startGame = () => {
         startNextRound()
@@ -110,14 +127,14 @@ export default function GamePage(props) {
         }
     }
     
-    useEffect(() => {
-        // Initialize the Spotify API instance
-        let spotifyApi = new SpotifyWebApi()
-        spotifyApi.setAccessToken(props.token)
+    // useEffect(() => {
+    //     // Initialize the Spotify API instance
+    //     let spotifyApi = new SpotifyWebApi()
+    //     spotifyApi.setAccessToken(props.token)
 
-        // Choose random songs from a given playlist to use for the game
-        getRandomSongsFromPlaylist(spotifyApi, Playlists.allOut2010s, SONGS_PER_GAME)
-    }, [gameIndex])
+    //     // Choose random songs from a given playlist to use for the game
+    //     getRandomSongsFromPlaylist(spotifyApi, playlistID, SONGS_PER_GAME)
+    // }, [gameIndex, playlistID])
 
     // check if guessInput is the same as the song title or one of the artist names
     useEffect(() => {
@@ -155,35 +172,54 @@ export default function GamePage(props) {
     }, [seconds, gameStarted]);
     
     return (
-        <div>
+        <div className={"game-page" + (gameStarted ? " game-page-begun" : " game-page-unbegun")}>
+            <Header/>
             {!gameStarted &&
                 <div>
-                    <div>Make sure your sound is on!</div>
-                    <button onClick={startGame}>Start game</button>
+                    <div className='genre-button-wrapper'>
+                        <button onClick={() => setPlaylist(Playlists.allOut1960s)} className='genre-button nice-button'>1960s</button>
+                        <button onClick={() => setPlaylist(Playlists.allOut1970s)} className='genre-button nice-button'>1970s</button>
+                        <button onClick={() => setPlaylist(Playlists.allOut1980s)} className='genre-button nice-button'>1980s</button>
+                        <button onClick={() => setPlaylist(Playlists.allOut1990s)} className='genre-button nice-button'>1990s</button>
+                        <button onClick={() => setPlaylist(Playlists.allOut2000s)} className='genre-button nice-button'>2000s</button>
+                        <button onClick={() => setPlaylist(Playlists.allOut2010s)} className='genre-button nice-button'>2010s</button>
+                    </div>
+                    {/* <button className="nice-button start-button" onClick={startGame}>begin</button> */}
+                    
+                    <div className="start-tip">Make sure your sound is on! 🔊</div>
                 </div>
             }
 
             {gameEnded && 
                 <div>
-                    <h2>Final Score: {artistScore + songScore}</h2>
-                    <div>Breakdown: {songScore} songs correct, {artistScore} artists correct!</div>
-                    <button onClick={resetGame}>Play Again!</button>
+                    <div className='song-result-head'>Final Score: 
+                        <span className='song-result'>{artistScore + songScore}</span>
+                    </div>
+                    <div className='song-result-head'>Breakdown: {songScore} songs correct, {artistScore} artists correct!</div>
+                    <button className="play-again-button nice-button" onClick={resetGame}>Play Again</button>
                 </div>
             }
 
             {gameStarted && !gameEnded &&
                 <div>
-                    <h2>Round: {round + 1}</h2>
-                    { roundOver ?
-                        <button onClick={startNextRound}>{round + 1 === SONGS_PER_GAME ? "See results" : "Next round"}</button>
-                        : <button onClick={endCurrentRound}>I HAVE NO IDEA</button>
-                    }
-                    <div>
+                    {/* <div>
                         <div>Score: {songScore} songs correct, {artistScore} artists correct</div>
+                    </div> */}
+                    <div className="countdown-timer">
+                        <CountdownCircleTimer
+                            isPlaying={!roundOver}
+                            duration={SECONDS_PER_ROUND}
+                            colors="#303030"
+                            trailColor="#eeee"
+                            strokeWidth={65}
+                            strokeLinecap="butt"
+                            size={200}
+                            key={round}
+                        >
+                            {({ remainingTime }) => <div className="timer-text">{seconds}</div>}
+                        </CountdownCircleTimer>
                     </div>
-                    <div>
-                        <div>{seconds}s</div>
-                    </div>
+                    
                     {songs &&
                         <div>
                             {/* <p>SUPER SECRET Song: {getCurrentSong().title}</p>
@@ -192,6 +228,8 @@ export default function GamePage(props) {
                             <InputBox
                                 guessInputValue={guessInput}
                                 onChangeGuessInput={setGuessInput}
+                                round={round}
+                                songsPerGame={SONGS_PER_GAME}
                             />
 
                             <CorrectAnswers 
@@ -201,6 +239,14 @@ export default function GamePage(props) {
                                 artistCorrect={artistCorrect}
                                 roundOver={roundOver}
                             />
+
+                            { !roundOver &&
+                                <button className="idk nice-button" onClick={endCurrentRound}>IDK</button>
+                            }
+
+                            { roundOver &&
+                                <button className="next-round-button nice-button" onClick={startNextRound}>{round + 1 === SONGS_PER_GAME ? "See results" : "Next round"}</button>
+                            }
                         </div>
                     }
                 </div>

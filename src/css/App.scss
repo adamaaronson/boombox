@@ -1,0 +1,73 @@
+$black: #0f0f0f;
+$dark-gray: #303030;
+$light-gray: #888888;
+$white: #eeeeee;
+$red: #d90f0f;
+$spotify-color: rgb(30, 215, 96);
+$big-font: nimbus-sans-extended, sans-serif;
+$fancy-font: matrix-ii, serif;
+
+$spacing-unit: 30px;
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: $big-font;
+}
+
+html, body, #root, .app {
+    height: 100%;
+}
+
+.app {
+    display: flex;
+    // justify-content: center;
+    // align-items: center;
+}
+
+html {
+    color: $white;
+    background: $black;
+}
+
+body {
+    text-align: center;
+}
+
+.nice-button {
+    padding: $spacing-unit / 2 $spacing-unit;
+    border: none;
+    background: $dark-gray;
+    color: $white;
+    margin: auto;
+    font-size: 36px;
+    font-family: $big-font;
+    font-weight: bold;
+    text-transform: uppercase;
+    border-radius: 1000px;
+    padding-right: $spacing-unit + 5px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+
+    &:hover {
+        background: $white;
+        color: $black;
+    }
+}
+
+.app {
+    display: flex;
+    flex-direction: column;
+}
+
+.content {
+    flex: 1 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+footer {
+    flex-shrink: 0;
+}

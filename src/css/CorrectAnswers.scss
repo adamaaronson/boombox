@@ -1,0 +1,33 @@
+@import "App.scss";
+
+.correct-answers {
+    max-width: 500px;
+    margin-bottom: $spacing-unit;
+}
+
+.song-was {
+    font-weight: normal;
+    color: $light-gray;
+    font-size: 25px;
+}
+
+.by {
+    font-weight: normal;
+    color: $light-gray;
+    font-size: 20px;
+    margin-right: 0.5em;
+}
+
+.song-title {
+    color: $white;
+    font-family: $big-font;
+    font-weight: bold;
+    font-size: 30px;
+}
+
+.artist-name {
+    color: $white;
+    font-family: $big-font;
+    font-weight: bold;
+    font-size: 26px;
+}

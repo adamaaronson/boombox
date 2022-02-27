@@ -1,0 +1,39 @@
+@import "App.scss";
+
+.start-tip {
+    color: $light-gray;
+    font-size: 20px;
+    font-family: $big-font;
+    margin-top: $spacing-unit;
+}
+
+.timer-text {
+    color: $red;
+    font-size: 35px;
+    font-weight: bold;
+    font-family: $big-font;
+}
+
+.next-round-button {
+    font-size: 20px !important;
+}
+
+.countdown-timer {
+    text-align: center;
+    width: min-content;
+    margin: auto;
+    margin-bottom: $spacing-unit;
+}
+
+.game-page-unbegun, .login-page {
+    margin: $spacing-unit;
+}
+
+.game-page-begun {
+    margin-top: $spacing-unit;
+    align-self: flex-start;
+}
+
+.idk {
+    font-size: 18px !important;
+}

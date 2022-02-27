@@ -1,0 +1,32 @@
+@import "App.scss";
+
+.spotify-button {
+    padding: $spacing-unit;
+    border: none;
+    background: $dark-gray;
+    color: $white;
+    display: flex;
+    margin: auto;
+    flex-flow: row wrap;
+    align-items: center;
+    justify-content: center;
+    gap: $spacing-unit / 2;
+    font-size: 20px;
+    font-family: $big-font;
+    font-weight: bold;
+    text-transform: uppercase;
+    border-radius: 1000px;
+    padding-right: $spacing-unit + 5px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+
+    &:hover {
+        background: $white;
+        color: $black;
+    }
+}
+
+.spotify-logo {
+    height: 2em;
+    fill: $spotify-color;
+}

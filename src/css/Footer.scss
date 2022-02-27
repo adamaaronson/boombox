@@ -1,0 +1,9 @@
+@import "App.scss";
+
+footer {
+    padding: $spacing-unit / 2;
+    background-color: rgb(235, 195, 64);
+    width: 100%;
+    color: black;
+    margin-top: $spacing-unit / 2;
+}

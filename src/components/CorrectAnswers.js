@@ -1,11 +1,19 @@
 import React from 'react'
+import '../css/CorrectAnswers.scss'
 
 export default function AnswerBoxes(props) {
     return (
-        <div>
-            <h2>The song {props.roundOver ? "was" : "is"}...</h2>
-            <h3>{(props.roundOver || props.songCorrect) ? props.songTitle : "_____"}</h3>
-            <h3>by {(props.roundOver || props.artistCorrect) ? props.artistNames : "_____"}</h3>
+        <div className="correct-answers">
+            <div className='song-was'>The song {props.roundOver ? "was" : "is"}...</div>
+            <div className='song-result song-title'>
+                {(props.roundOver || props.songCorrect) ? props.songTitle : "_____"}
+            </div>
+            <div className='correct-artist'>
+                <span className='by'>by</span>
+                <span className='artist-name'>
+                    {(props.roundOver || props.artistCorrect) ? props.artistNames : "_____"}
+                </span>
+            </div>
         </div>
-    );
+    )
 }

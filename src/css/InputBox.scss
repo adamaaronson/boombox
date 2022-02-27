@@ -1,0 +1,18 @@
+@import "App.scss";
+
+.name-the-song {
+    color: $light-gray;
+
+    strong {
+        color: $white;
+    }
+}
+
+.guess-input {
+    appearance: none;
+    border: none;
+    background: $dark-gray;
+    border-bottom: 2px solid $white !important;
+    color: $white;
+    font-size: 24px;
+}

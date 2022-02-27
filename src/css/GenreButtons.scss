@@ -1,0 +1,12 @@
+@import "App.scss";
+
+.genre-button-wrapper {
+    max-width: 600px;
+    gap: $spacing-unit / 2;
+}
+
+.genre-button {
+    margin: $spacing-unit / 4 !important;
+    display: inline-block;
+    text-transform: none !important;
+}
