@@ -188,7 +188,7 @@ export default function GamePage(props) {
     }, [seconds, gameStarted]);
     
     return (
-        <div className={"game-page" + (gameStarted ? " game-page-begun" : " game-page-unbegun")}>
+        <div className={"game-page" + ((gameStarted && !gameEnded) ? " game-page-begun" : " game-page-unbegun")}>
             <Header/>
             {!gameStarted &&
                 <div>

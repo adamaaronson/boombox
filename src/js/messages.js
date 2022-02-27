@@ -1,7 +1,7 @@
 const Messages = {
     bad: 'Oof! Better luck next time.',
     ok: 'Ok song knowledge.',
-    good: 'Hm, nice.',
+    good: 'Not too shabby.',
     reallygood: 'Color me impressed.'
 }
 

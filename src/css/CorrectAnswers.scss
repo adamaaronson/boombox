@@ -3,6 +3,8 @@
 .correct-answers {
     max-width: 600px;
     margin-bottom: $spacing-unit;
+    overflow-wrap: break-word;
+    overflow: wrap;
 }
 
 .song-was {
